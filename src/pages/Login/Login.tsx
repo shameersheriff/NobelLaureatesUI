@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -10,15 +10,25 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../../theme/Theme";
+import { AuthContext } from "../../context/auth.context";
+import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  if (!authContext) {
+    return <div>Error: AuthContext is not provided</div>;
+  }
+
+  const { login } = authContext;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await login(username, password);
+    navigate("/");
   };
 
   return (
@@ -54,6 +64,7 @@ const Login: React.FC = () => {
                 name="email"
                 autoComplete="email"
                 autoFocus
+                onChange={(e) => setUsername(e.target.value)}
               />
               <TextField
                 margin="normal"
@@ -64,6 +75,7 @@ const Login: React.FC = () => {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                onChange={(e) => setPassword(e.target.value)}
               />
               <Button
                 type="submit"

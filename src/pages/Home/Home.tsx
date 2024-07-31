@@ -60,7 +60,7 @@ const ListPage: React.FC = () => {
         <Box sx={{ p: 2 }}>
           <Grid container spacing={2}>
             {cards.map((card) => (
-              <Grid item xs={12} sm={6} md={4} key={card.id}>
+              <Grid item xs={12} sm={6} md={4} key={card.id + Math.random()}>
                 <Card
                   id={card.id.toString()}
                   title={card.title}
