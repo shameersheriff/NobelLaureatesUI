@@ -11,6 +11,7 @@ import { CSSProperties } from "react";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { AuthContext } from "../../context/auth.context";
 import { useNavigate } from "react-router-dom";
+import { ScreenRoute } from "../../Routers";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -33,14 +34,20 @@ const Header = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/");
+    navigate(ScreenRoute.Home);
     handleClose();
   };
 
   return (
     <AppBar position="static" style={styles.Container}>
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography
+          variant="h6"
+          component="div"
+          style={{ cursor: "pointer" }}
+          sx={{ flexGrow: 1 }}
+          onClick={() => navigate(ScreenRoute.Home)}
+        >
           Nobel Laureates
         </Typography>
 

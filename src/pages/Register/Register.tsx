@@ -13,6 +13,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../../theme/Theme";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/auth.context";
+import { ScreenRoute } from "../../Routers";
 
 const Register: React.FC = () => {
   const authContext = useContext(AuthContext);
@@ -50,7 +51,7 @@ const Register: React.FC = () => {
 
     try {
       await register(email, password, firstName, lastName);
-      navigate("/");
+      navigate(ScreenRoute.Home);
     } catch (error) {
       setMessage("User registration failed");
     } finally {
@@ -173,7 +174,7 @@ const Register: React.FC = () => {
               )}
               <Grid container justifyContent="flex-end">
                 <Grid item xs={12} style={{ textAlign: "center" }}>
-                  <Link href="/login" variant="body2">
+                  <Link href={ScreenRoute.Login} variant="body2">
                     Already have an account? Sign in
                   </Link>
                 </Grid>

@@ -12,6 +12,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../../theme/Theme";
 import { AuthContext } from "../../context/auth.context";
 import { useNavigate } from "react-router-dom";
+import { ScreenRoute } from "../../Routers";
 
 const Login: React.FC = () => {
   const authContext = useContext(AuthContext);
@@ -30,7 +31,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await login(username, password);
-    navigate("/");
+    navigate(ScreenRoute.Home);
   };
 
   return (

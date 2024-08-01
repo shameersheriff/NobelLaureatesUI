@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "../../context/auth.context";
+import { ScreenRoute } from "../../Routers";
 
 interface PrivateRouteProps {
   component: React.ComponentType<any>;
@@ -18,7 +19,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
 
   const { user } = authContext;
 
-  return user ? <Component {...rest} /> : <Navigate to="/login" />;
+  return user ? <Component {...rest} /> : <Navigate to={ScreenRoute.Login} />;
 };
 
 export default PrivateRoute;
