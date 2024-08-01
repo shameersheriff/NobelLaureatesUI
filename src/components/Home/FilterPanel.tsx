@@ -6,18 +6,34 @@ import {
   Select,
   MenuItem,
   TextField,
+  SelectChangeEvent,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
+import { Filter } from "../../common/enums/filters.enum";
 
-const FilterPanel = () => {
-  const [filter1, setFilter1] = React.useState("");
-  const [filter4, setFilter4] = React.useState("");
+export interface FilterValue {
+  Type: Filter;
+  Value: string;
+}
+
+interface FilterPanelProps {
+  filtersUpdated: (filter: FilterValue) => void;
+}
+
+const FilterPanel = (props: FilterPanelProps) => {
+  const [genderFilter, setGenderFilter] = useState<string>("");
+  const [dateOfBirthFilter, setDateOfBirthFilter] = useState<string>("");
+  const [dateOfDeathFilter, setDateOfDeathFilter] = useState<string>("");
+  const [prizeCategoryFilter, setPrizeCategoryFilter] = useState<string>("");
 
   const handleFilterChange = (
-    event: React.ChangeEvent<{ value: unknown }>,
-    filter: React.Dispatch<React.SetStateAction<string>>
+    event: React.ChangeEvent<{ value: unknown }> | SelectChangeEvent<string>,
+    setFilter: React.Dispatch<React.SetStateAction<string>>,
+    type: Filter
   ) => {
-    filter(event.target.value as string);
+    const value = event.target.value as string;
+    setFilter(value);
+    props.filtersUpdated({ Type: type, Value: value });
   };
   return (
     <Box sx={{ p: 2 }}>
@@ -28,13 +44,15 @@ const FilterPanel = () => {
             <Select
               labelId="filter1-label"
               id="filter1"
-              value={filter1}
+              value={genderFilter}
               label="Filter 1"
-              onChange={(e) => handleFilterChange(e, setFilter1)}
+              onChange={(e) =>
+                handleFilterChange(e, setGenderFilter, Filter.Gender)
+              }
             >
-              <MenuItem value={"Male"}>Male</MenuItem>
-              <MenuItem value={"Female"}>Female</MenuItem>
-              <MenuItem value={"Other"}>Other</MenuItem>
+              <MenuItem value={"male"}>Male</MenuItem>
+              <MenuItem value={"female"}>Female</MenuItem>
+              <MenuItem value={"other"}>Other</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -44,6 +62,11 @@ const FilterPanel = () => {
               id="outlined-basic"
               label="Date of birth"
               variant="outlined"
+              type="number"
+              value={dateOfBirthFilter}
+              onChange={(e) =>
+                handleFilterChange(e, setDateOfBirthFilter, Filter.DateOfBirth)
+              }
             />
           </FormControl>
         </Grid>
@@ -53,21 +76,32 @@ const FilterPanel = () => {
             label="Date of death"
             variant="outlined"
             fullWidth
+            type="number"
+            value={dateOfDeathFilter}
+            onChange={(e) =>
+              handleFilterChange(e, setDateOfDeathFilter, Filter.DateOfDeath)
+            }
           />
         </Grid>
         <Grid item xs={3}>
           <FormControl fullWidth>
-            <InputLabel id="filter4-label">Filter 4</InputLabel>
+            <InputLabel id="filter4-label">Prize Category</InputLabel>
             <Select
               labelId="filter4-label"
               id="filter4"
-              value={filter4}
+              value={prizeCategoryFilter}
               label="Filter 4"
-              onChange={(e) => handleFilterChange(e, setFilter4)}
+              onChange={(e) =>
+                handleFilterChange(
+                  e,
+                  setPrizeCategoryFilter,
+                  Filter.PrizeCategory
+                )
+              }
             >
-              <MenuItem value={"Type 1"}>Type 1</MenuItem>
-              <MenuItem value={"Type 1"}>Type 2</MenuItem>
-              <MenuItem value={"Type 1"}>Type 3</MenuItem>
+              <MenuItem value={"che"}>Chemistry</MenuItem>
+              <MenuItem value={"eco"}>Economic Sciences</MenuItem>
+              <MenuItem value={"lit"}>Literature</MenuItem>
             </Select>
           </FormControl>
         </Grid>
