@@ -68,7 +68,7 @@ const Header = () => {
         >
           <AccountCircle />
           <Typography variant="h6" component="div" sx={{ marginLeft: 1 }}>
-            {user?.FullName}
+            {user?.FirstName + " " + user?.LastName}
           </Typography>
         </Box>
       </Toolbar>

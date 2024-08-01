@@ -14,10 +14,12 @@ import { AuthContext } from "../../context/auth.context";
 import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
+  
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  
 
   if (!authContext) {
     return <div>Error: AuthContext is not provided</div>;

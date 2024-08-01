@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -8,19 +8,54 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../../theme/Theme";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/auth.context";
 
 const Register: React.FC = () => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  if (!authContext) {
+    return <div>Error: AuthContext is not provided</div>;
+  }
+
+  const { register } = authContext;
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      firstName: data.get("firstName"),
-      lastName: data.get("lastName"),
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    setMessage("");
+
+    if (password !== confirmPassword) {
+      setMessage("Passwords don't match");
+      return;
+    }
+
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+      setMessage("All fields are required");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await register(email, password, firstName, lastName);
+      navigate("/");
+    } catch (error) {
+      setMessage("User registration failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,6 +93,8 @@ const Register: React.FC = () => {
                     id="firstName"
                     label="First Name"
                     autoFocus
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -68,6 +105,8 @@ const Register: React.FC = () => {
                     label="Last Name"
                     name="lastName"
                     autoComplete="family-name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
                   />
                 </Grid>
               </Grid>
@@ -79,7 +118,8 @@ const Register: React.FC = () => {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
-                autoFocus
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
               <TextField
                 margin="normal"
@@ -89,29 +129,51 @@ const Register: React.FC = () => {
                 label="Password"
                 type="password"
                 id="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                name="password"
+                name="confirmPassword"
                 label="Confirm Password"
                 type="password"
-                id="password"
-                autoComplete="current-password"
+                id="confirmPassword"
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Register
-              </Button>
+              {loading ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    mt: 3,
+                    mb: 2,
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Register
+                </Button>
+              )}
+              {message && (
+                <Typography textAlign={"center"} style={{ color: "red" }}>
+                  {message}
+                </Typography>
+              )}
               <Grid container justifyContent="flex-end">
                 <Grid item xs={12} style={{ textAlign: "center" }}>
-                  <Link href="login" variant="body2">
+                  <Link href="/login" variant="body2">
                     Already have an account? Sign in
                   </Link>
                 </Grid>
