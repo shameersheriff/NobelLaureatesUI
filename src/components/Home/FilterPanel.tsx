@@ -8,7 +8,7 @@ import {
   TextField,
   SelectChangeEvent,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Filter } from "../../common/enums/filters.enum";
 
 export interface FilterValue {
@@ -25,6 +25,7 @@ const FilterPanel = (props: FilterPanelProps) => {
   const [dateOfBirthFilter, setDateOfBirthFilter] = useState<string>("");
   const [dateOfDeathFilter, setDateOfDeathFilter] = useState<string>("");
   const [prizeCategoryFilter, setPrizeCategoryFilter] = useState<string>("");
+  const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleFilterChange = (
     event: React.ChangeEvent<{ value: unknown }> | SelectChangeEvent<string>,
@@ -33,8 +34,14 @@ const FilterPanel = (props: FilterPanelProps) => {
   ) => {
     const value = event.target.value as string;
     setFilter(value);
-    props.filtersUpdated({ Type: type, Value: value });
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    debounceTimeoutRef.current = setTimeout(() => {
+      props.filtersUpdated({ Type: type, Value: value });
+    }, 500);
   };
+
   return (
     <Box sx={{ p: 2 }}>
       <Grid container spacing={2}>
