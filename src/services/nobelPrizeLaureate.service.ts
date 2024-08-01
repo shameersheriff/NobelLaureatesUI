@@ -35,6 +35,14 @@ class NobelLaureateService {
     );
     return { laureates: laureates, meta: response.data.meta };
   }
+
+  async getNobelLaureate(id: string): Promise<NobelLaureate> {
+    const response = await axios.get<NobelLaureate[]>(
+      `${API_URL}laureate/${id}`
+    );
+    const data = new NobelLaureate(response.data[0]);
+    return data;
+  }
 }
 
 export default new NobelLaureateService();

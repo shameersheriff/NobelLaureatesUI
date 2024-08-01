@@ -2,6 +2,8 @@ export class NobelLaureate {
   Id!: number;
   FullName!: string;
   Gender: string;
+  Birth: any;
+  Death: any;
   NobelPrizes!: NobelPrizes[];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -9,6 +11,8 @@ export class NobelLaureate {
     this.Id = data.Id || data.id;
     this.FullName = data.fullName.en;
     this.Gender = data.Gender || data.gender;
+    this.Birth = data.birth;
+    this.Death = data.death;
     if (data.nobelPrizes?.length > 0) {
       this.NobelPrizes = [];
       data.nobelPrizes.forEach((prizes: unknown) => {
