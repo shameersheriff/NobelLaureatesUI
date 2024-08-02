@@ -1,13 +1,16 @@
 import React, { useContext, useState } from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
-import Paper from "@mui/material/Paper";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
+import {
+  Avatar,
+  Button,
+  TextField,
+  Link,
+  Paper,
+  Box,
+  Grid,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "../../theme/Theme";
 import { AuthContext } from "../../context/auth.context";
@@ -17,10 +20,11 @@ import { ScreenRoute } from "../../Routers";
 const Login: React.FC = () => {
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
-  
+
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!authContext) {
     return <div>Error: AuthContext is not provided</div>;
@@ -30,8 +34,17 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(username, password);
-    navigate(ScreenRoute.Home);
+    setLoading(true);
+    setError(null);
+
+    try {
+      await login(username, password);
+      navigate(ScreenRoute.Home);
+    } catch (err: any) {
+      setError("Invalid username or password");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -67,7 +80,11 @@ const Login: React.FC = () => {
                 name="email"
                 autoComplete="email"
                 autoFocus
+                value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                error={!!error}
+                helperText={error ? "Please enter a valid email" : ""}
+                aria-label="email"
               />
               <TextField
                 margin="normal"
@@ -78,16 +95,40 @@ const Login: React.FC = () => {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                error={!!error}
+                helperText={error ? "Invalid username or password" : ""}
+                aria-label="password"
               />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                Sign In
-              </Button>
+              {error && (
+                <Typography color="error" variant="body2" align="center">
+                  {error}
+                </Typography>
+              )}
+              <Box sx={{ position: "relative" }}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                  disabled={loading}
+                >
+                  Sign In
+                </Button>
+                {loading && (
+                  <CircularProgress
+                    size={24}
+                    sx={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      marginTop: "-12px",
+                      marginLeft: "-12px",
+                    }}
+                  />
+                )}
+              </Box>
               <Grid container>
                 <Grid item xs={12} style={{ textAlign: "center" }}>
                   <Link href="register" variant="body2">

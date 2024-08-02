@@ -27,23 +27,67 @@ const Register: React.FC = () => {
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [firstNameError, setFirstNameError] = useState<string | null>(null);
+  const [lastNameError, setLastNameError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
+
   if (!authContext) {
     return <div>Error: AuthContext is not provided</div>;
   }
 
   const { register } = authContext;
 
+  const validateForm = () => {
+    let valid = true;
+
+    if (!firstName) {
+      setFirstNameError("First name is required");
+      valid = false;
+    } else {
+      setFirstNameError(null);
+    }
+
+    if (!lastName) {
+      setLastNameError("Last name is required");
+      valid = false;
+    } else {
+      setLastNameError(null);
+    }
+
+    if (!email) {
+      setEmailError("Email is required");
+      valid = false;
+    } else {
+      setEmailError(null);
+    }
+
+    if (!password) {
+      setPasswordError("Password is required");
+      valid = false;
+    } else {
+      setPasswordError(null);
+    }
+
+    if (!confirmPassword) {
+      setConfirmPasswordError("Confirm password is required");
+      valid = false;
+    } else if (password !== confirmPassword) {
+      setConfirmPasswordError("Passwords don't match");
+      valid = false;
+    } else {
+      setConfirmPasswordError(null);
+    }
+
+    return valid;
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessage("");
 
-    if (password !== confirmPassword) {
-      setMessage("Passwords don't match");
-      return;
-    }
-
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      setMessage("All fields are required");
+    if (!validateForm()) {
       return;
     }
 
@@ -96,6 +140,9 @@ const Register: React.FC = () => {
                     autoFocus
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
+                    error={!!firstNameError}
+                    helperText={firstNameError}
+                    aria-label="first name"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -108,6 +155,9 @@ const Register: React.FC = () => {
                     autoComplete="family-name"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
+                    error={!!lastNameError}
+                    helperText={lastNameError}
+                    aria-label="last name"
                   />
                 </Grid>
               </Grid>
@@ -121,6 +171,9 @@ const Register: React.FC = () => {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                error={!!emailError}
+                helperText={emailError}
+                aria-label="email"
               />
               <TextField
                 margin="normal"
@@ -133,6 +186,9 @@ const Register: React.FC = () => {
                 autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                error={!!passwordError}
+                helperText={passwordError}
+                aria-label="password"
               />
               <TextField
                 margin="normal"
@@ -145,6 +201,9 @@ const Register: React.FC = () => {
                 autoComplete="new-password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                error={!!confirmPasswordError}
+                helperText={confirmPasswordError}
+                aria-label="confirm password"
               />
               {loading ? (
                 <Box

@@ -13,12 +13,12 @@ class Filters {
   Gender?: string;
   DateOfBirth?: string;
   DateOfDeath?: string;
-  PriceCategory?: string;
+  PrizeCategory?: string;
 }
 
 const Home: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [showError, setShowError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [limit] = useState<number>(30);
   const [offset, setOffset] = useState<number>(0);
   const total = useRef<number>(0);
@@ -26,7 +26,10 @@ const Home: React.FC = () => {
   const [laureates, setLaureates] = useState<NobelLaureate[]>([]);
 
   useEffect(() => {
-    getLaureates(true);
+    const timeoutId = setTimeout(() => {
+      getLaureates(true);
+    }, 300);
+    return () => clearTimeout(timeoutId);
   }, [filters]);
 
   useEffect(() => {
@@ -37,7 +40,7 @@ const Home: React.FC = () => {
 
   const getLaureates = async (reset: boolean) => {
     setLoading(true);
-    setShowError(false);
+    setErrorMessage(null);
     if (reset) {
       setLaureates([]);
     }
@@ -48,19 +51,14 @@ const Home: React.FC = () => {
         filters.Gender,
         filters.DateOfBirth,
         filters.DateOfDeath,
-        filters.PriceCategory
+        filters.PrizeCategory
       );
-      if (reset) {
-        setLaureates(response.laureates);
-      } else {
-        setLaureates((prevLaureates) => [
-          ...prevLaureates,
-          ...response.laureates,
-        ]);
-      }
+      setLaureates((prevLaureates) =>
+        reset ? response.laureates : [...prevLaureates, ...response.laureates]
+      );
       total.current = response.meta.count;
-    } catch (ex: unknown) {
-      setShowError(true);
+    } catch (ex: any) {
+      setErrorMessage("An error occurred while fetching Nobel laureates.");
     } finally {
       setLoading(false);
     }
@@ -79,13 +77,16 @@ const Home: React.FC = () => {
         newFilters.DateOfDeath = filter.Value;
         break;
       case Filter.PrizeCategory:
-        newFilters.PriceCategory = filter.Value;
+        newFilters.PrizeCategory = filter.Value;
         break;
       default:
         break;
     }
-    setFilters(newFilters);
-    setOffset(0);
+
+    if (JSON.stringify(newFilters) !== JSON.stringify(filters)) {
+      setFilters(newFilters);
+      setOffset(0);
+    }
   };
 
   const observer = useRef<IntersectionObserver>();
@@ -139,12 +140,14 @@ const Home: React.FC = () => {
               }
             })}
           </Grid>
-          {(showError || loading) && (
+          {loading && (
             <Box width={"100%"} textAlign={"center"} marginTop={"2rem"}>
-              {showError && (
-                <Typography color={"red"}>Error Occured!</Typography>
-              )}
-              {loading && <CircularProgress style={{ textAlign: "center" }} />}
+              <CircularProgress style={{ textAlign: "center" }} />
+            </Box>
+          )}
+          {errorMessage && laureates.length === 0 && (
+            <Box width={"100%"} textAlign={"center"} marginTop={"2rem"}>
+              <Typography color={"red"}>{errorMessage}</Typography>
             </Box>
           )}
         </Box>
