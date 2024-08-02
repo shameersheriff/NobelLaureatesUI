@@ -11,7 +11,6 @@ import {
   Button,
   List,
   ListItem,
-  ListItemText,
 } from "@mui/material";
 import Header from "../../components/Header/Header";
 import { ThemeProvider } from "@emotion/react";
@@ -30,6 +29,11 @@ const Detail: React.FC = () => {
   const [comments, setComments] = useState<UserComment[]>([]);
   const [newComment, setNewComment] = useState<string>("");
 
+  useEffect(() => {
+    fetchLaureate();
+    getComments();
+  }, [id]);
+
   const authContext = useContext(AuthContext);
 
   if (!authContext) {
@@ -37,11 +41,6 @@ const Detail: React.FC = () => {
   }
 
   const { user } = authContext;
-
-  useEffect(() => {
-    fetchLaureate();
-    getComments();
-  }, [id]);
 
   const fetchLaureate = async () => {
     setLoading(true);
@@ -130,7 +129,7 @@ const Detail: React.FC = () => {
             {laureate.NobelPrizes.map((prize, index) => (
               <Box key={`nobelPrize-${index}`}>
                 <Typography variant="body1" paragraph>
-                  Motivation : {prize.Motivation}
+                  Motivation: {prize.Motivation}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
                   {prize.CategoryFullName} - {prize.AwardYear}
@@ -162,8 +161,12 @@ const Detail: React.FC = () => {
           </Button>
           <List sx={{ marginTop: "1rem" }}>
             {comments.map((comment, index) => (
-              <ListItem key={`comments=${index}`}>
-                <ListItemText primary={comment.Content} />
+              <ListItem key={`comment-${index}`} sx={{ padding: 0 }}>
+                <Card sx={{ width: "100%", marginBottom: "1rem" }}>
+                  <CardContent>
+                    <Typography variant="body1">{comment.Content}</Typography>
+                  </CardContent>
+                </Card>
               </ListItem>
             ))}
           </List>
